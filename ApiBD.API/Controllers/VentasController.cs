@@ -13,12 +13,14 @@ namespace ApiBD.API.Controllers
     public class VentasController : ControllerBase
     {
         private readonly IGenericRepository<Venta> _repo;
+        private readonly IGenericRepository<Producto> _productRepo; // Repo for updating stock
         private readonly IMapper _mapper;
 
-        public VentasController(IGenericRepository<Venta> repo, IMapper mapper)
+        public VentasController(IGenericRepository<Venta> repo, IMapper mapper, IGenericRepository<Producto> productRepo)
         {
             _repo = repo;
             _mapper = mapper;
+            _productRepo = productRepo;
         }
 
         [HttpGet]
@@ -66,6 +68,40 @@ namespace ApiBD.API.Controllers
             _repo.Delete(entity);
             await _repo.SaveAsync();
             return NoContent();
+        }
+
+        [HttpPost("with-details")] // New endpoint to handle a sale with its details
+        public async Task<ActionResult<VentaDto>> CreateWithDetails(VentaDto dto)
+        {
+            // Map the VentaDto to the Venta entity, including details
+            var venta = _mapper.Map<Venta>(dto);
+
+            // Add the Venta (and its DetallesVenta) to the repository
+            await _repo.AddAsync(venta);
+
+            // Update stock for each detail
+            if (venta.DetallesVenta != null)
+            {
+                foreach (var detalle in venta.DetallesVenta)
+                {
+                    if (detalle.IdProducto.HasValue)
+                    {
+                        var producto = await _productRepo.GetByIdAsync(detalle.IdProducto.Value);
+                        if (producto != null)
+                        {
+                            producto.StockActual -= detalle.Cantidad;
+                            _productRepo.Update(producto);
+                        }
+                    }
+                }
+            }
+
+            // Save all changes (venta, detalles and stock updates)
+            await _repo.SaveAsync();
+
+            // Map back to DTO for response
+            var result = _mapper.Map<VentaDto>(venta);
+            return CreatedAtAction(nameof(Get), new { id = result.IdVenta }, result);
         }
     }
 }
