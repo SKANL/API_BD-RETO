@@ -43,3 +43,4 @@ C:\Users\angua\OneDrive\Documentos\Code\Reto de BD\api-BD\ApiBD.API\obj\Debug\ne
 C:\Users\angua\OneDrive\Documentos\Code\Reto de BD\api-BD\ApiBD.API\obj\Debug\net9.0\ApiBD.API.pdb
 C:\Users\angua\OneDrive\Documentos\Code\Reto de BD\api-BD\ApiBD.API\obj\Debug\net9.0\ApiBD.API.genruntimeconfig.cache
 C:\Users\angua\OneDrive\Documentos\Code\Reto de BD\api-BD\ApiBD.API\obj\Debug\net9.0\ref\ApiBD.API.dll
+C:\Users\angua\OneDrive\Documentos\Code\Reto de BD\api-BD\ApiBD.API\obj\Debug\net9.0\ApiBD.API.sourcelink.json

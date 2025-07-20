@@ -17,3 +17,4 @@ C:\Users\angua\OneDrive\Documentos\Code\Reto de BD\api-BD\ApiBD.Infrastructure\o
 C:\Users\angua\OneDrive\Documentos\Code\Reto de BD\api-BD\ApiBD.Infrastructure\obj\Debug\net9.0\ApiBD.Infrastructure.pdb
 C:\Users\angua\OneDrive\Documentos\Code\Reto de BD\api-BD\ApiBD.Infrastructure\obj\Debug\net9.0\ApiBD.Infrastructure.genruntimeconfig.cache
 C:\Users\angua\OneDrive\Documentos\Code\Reto de BD\api-BD\ApiBD.Infrastructure\obj\Debug\net9.0\ref\ApiBD.Infrastructure.dll
+C:\Users\angua\OneDrive\Documentos\Code\Reto de BD\api-BD\ApiBD.Infrastructure\obj\Debug\net9.0\ApiBD.Infrastructure.sourcelink.json

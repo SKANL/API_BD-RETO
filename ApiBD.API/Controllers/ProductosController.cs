@@ -1,10 +1,12 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using ApiBD.Application.Dtos;
 using ApiBD.Core.Entities;
 using ApiBD.Core.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ApiBD.API.Controllers
 {
@@ -39,9 +41,24 @@ namespace ApiBD.API.Controllers
         [HttpPost]
         public async Task<ActionResult<ProductoDto>> Create(ProductoDto dto)
         {
+            // Check if the product name already exists
+            var existingProduct = await _repo.GetAllAsync();
+            if (existingProduct.Any(p => p.Nombre == dto.Nombre))
+            {
+                return Conflict(new { message = $"El producto '{dto.Nombre}' ya está registrado." });
+            }
+
             var entity = _mapper.Map<Producto>(dto);
-            await _repo.AddAsync(entity);
-            await _repo.SaveAsync();
+            try
+            {
+                await _repo.AddAsync(entity);
+                await _repo.SaveAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                return StatusCode(500, new { message = "Error al guardar el producto.", details = ex.Message });
+            }
+
             var result = _mapper.Map<ProductoDto>(entity);
             return CreatedAtAction(nameof(Get), new { id = result.IdProducto }, result);
         }
