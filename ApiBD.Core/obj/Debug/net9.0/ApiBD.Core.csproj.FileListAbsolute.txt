@@ -1,0 +1,11 @@
+C:\Users\angua\OneDrive\Documentos\Code\Reto de BD\api-BD\ApiBD.Core\bin\Debug\net9.0\ApiBD.Core.deps.json
+C:\Users\angua\OneDrive\Documentos\Code\Reto de BD\api-BD\ApiBD.Core\bin\Debug\net9.0\ApiBD.Core.dll
+C:\Users\angua\OneDrive\Documentos\Code\Reto de BD\api-BD\ApiBD.Core\bin\Debug\net9.0\ApiBD.Core.pdb
+C:\Users\angua\OneDrive\Documentos\Code\Reto de BD\api-BD\ApiBD.Core\obj\Debug\net9.0\ApiBD.Core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\angua\OneDrive\Documentos\Code\Reto de BD\api-BD\ApiBD.Core\obj\Debug\net9.0\ApiBD.Core.AssemblyInfoInputs.cache
+C:\Users\angua\OneDrive\Documentos\Code\Reto de BD\api-BD\ApiBD.Core\obj\Debug\net9.0\ApiBD.Core.AssemblyInfo.cs
+C:\Users\angua\OneDrive\Documentos\Code\Reto de BD\api-BD\ApiBD.Core\obj\Debug\net9.0\ApiBD.Core.csproj.CoreCompileInputs.cache
+C:\Users\angua\OneDrive\Documentos\Code\Reto de BD\api-BD\ApiBD.Core\obj\Debug\net9.0\ApiBD.Core.dll
+C:\Users\angua\OneDrive\Documentos\Code\Reto de BD\api-BD\ApiBD.Core\obj\Debug\net9.0\refint\ApiBD.Core.dll
+C:\Users\angua\OneDrive\Documentos\Code\Reto de BD\api-BD\ApiBD.Core\obj\Debug\net9.0\ApiBD.Core.pdb
+C:\Users\angua\OneDrive\Documentos\Code\Reto de BD\api-BD\ApiBD.Core\obj\Debug\net9.0\ref\ApiBD.Core.dll
