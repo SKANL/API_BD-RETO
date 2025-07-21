@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,29 +24,41 @@ namespace ApiBD.API.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProductoDto>>> GetAll()
-        {
-            var entities = await _repo.GetAllAsync();
-            return Ok(_mapper.Map<IEnumerable<ProductoDto>>(entities));
-        }
-
         [HttpGet("{id}")]
-        public async Task<ActionResult<ProductoDto>> Get(int id)
+        public async Task<ActionResult<ProductoDto>> GetById(int id)
         {
             var entity = await _repo.GetByIdAsync(id);
             if (entity == null) return NotFound();
             return Ok(_mapper.Map<ProductoDto>(entity));
         }
 
+        [HttpGet("barcode/{codigo}")]
+        public async Task<ActionResult<ProductoDto>> GetByBarcode(string codigo)
+        {
+            var entities = await _repo.GetAllAsync();
+            var entity = entities.FirstOrDefault(p => p.CodigoDeBarra == codigo);
+            if (entity == null) return NotFound(new { message = "Producto no encontrado con ese código de barras." });
+            return Ok(_mapper.Map<ProductoDto>(entity));
+        }
+
         [HttpPost]
         public async Task<ActionResult<ProductoDto>> Create(ProductoDto dto)
         {
-            // Check if the product name already exists
-            var existingProduct = await _repo.GetAllAsync();
-            if (existingProduct.Any(p => p.Nombre == dto.Nombre))
+            var existingProducts = await _repo.GetAllAsync();
+            
+            // Validar si el nombre del producto ya existe
+            if (existingProducts.Any(p => p.Nombre == dto.Nombre))
             {
                 return Conflict(new { message = $"El producto '{dto.Nombre}' ya está registrado." });
+            }
+
+            // Validar si el código de barras ya existe
+            if (!string.IsNullOrEmpty(dto.CodigoDeBarra))
+            {
+                if (existingProducts.Any(p => p.CodigoDeBarra == dto.CodigoDeBarra))
+                {
+                    return Conflict(new { message = $"El código de barras '{dto.CodigoDeBarra}' ya está registrado." });
+                }
             }
 
             var entity = _mapper.Map<Producto>(dto);
@@ -56,32 +69,64 @@ namespace ApiBD.API.Controllers
             }
             catch (DbUpdateException ex)
             {
-                return StatusCode(500, new { message = "Error al guardar el producto.", details = ex.Message });
+                return StatusCode(500, new { message = "Error al crear el producto.", details = ex.InnerException?.Message ?? ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error interno del servidor.", details = ex.Message });
             }
 
-            var result = _mapper.Map<ProductoDto>(entity);
-            return CreatedAtAction(nameof(Get), new { id = result.IdProducto }, result);
+            return CreatedAtAction(nameof(GetById), new { id = entity.IdProducto }, _mapper.Map<ProductoDto>(entity));
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, ProductoDto dto)
         {
-            if (id != dto.IdProducto) return BadRequest();
+            if (id != dto.IdProducto) return BadRequest("El ID del producto no coincide.");
+            
             var entity = await _repo.GetByIdAsync(id);
-            if (entity == null) return NotFound();
-            _mapper.Map(dto, entity);
-            _repo.Update(entity);
-            await _repo.SaveAsync();
-            return NoContent();
-        }
+            if (entity == null) return NotFound("Producto no encontrado.");
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var entity = await _repo.GetByIdAsync(id);
-            if (entity == null) return NotFound();
-            _repo.Delete(entity);
-            await _repo.SaveAsync();
+            // Validar si el nuevo nombre ya existe en otro producto
+            var existingProducts = await _repo.GetAllAsync();
+            if (existingProducts.Any(p => p.IdProducto != id && p.Nombre == dto.Nombre))
+            {
+                return Conflict(new { message = $"El nombre '{dto.Nombre}' ya está registrado en otro producto." });
+            }
+
+            // Validar si el nuevo código de barras ya existe en otro producto
+            if (!string.IsNullOrEmpty(dto.CodigoDeBarra))
+            {
+                if (existingProducts.Any(p => p.IdProducto != id && p.CodigoDeBarra == dto.CodigoDeBarra))
+                {
+                    return Conflict(new { message = $"El código de barras '{dto.CodigoDeBarra}' ya está registrado en otro producto." });
+                }
+            }
+
+            try
+            {
+                // Mapear los datos del DTO a la entidad existente
+                entity.Nombre = dto.Nombre;
+                entity.CodigoDeBarra = dto.CodigoDeBarra;
+                entity.PrecioCosto = dto.PrecioCosto;
+                entity.PrecioVenta = dto.PrecioVenta;
+                entity.StockActual = dto.StockActual;
+                entity.StockMinimo = dto.StockMinimo;
+                entity.IdCategoria = dto.IdCategoria;
+                entity.IdProveedor = dto.IdProveedor;
+
+                _repo.Update(entity);
+                await _repo.SaveAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                return StatusCode(500, new { message = "Error al actualizar el producto.", details = ex.InnerException?.Message ?? ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Error interno del servidor.", details = ex.Message });
+            }
+            
             return NoContent();
         }
     }
